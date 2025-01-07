@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gospelmus_app
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "9000:9000"
+    environment:
+      - PHP_EXTENSION_DIR=/usr/local/lib/php/extensions/no-debug-non-zts-20200930
+    depends_on:
+      - mysql
+    networks:
+      - gospelmus_net
+
+  webserver:
+    image: nginx:alpine
+    container_name: gospelmus_webserver
+    volumes:
+      - .:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "7777:80" # Porta do Nginx ajustada para 0601
+    depends_on:
+      - app
+    networks:
+      - gospelmus_net
+
+  mysql:
+    image: mysql:5.7
+    container_name: gospelmus_mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gospelmus
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    ports:
+      - "3352:3306" # Porta do MySQL ajustada para 3352
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - gospelmus_net
+
+volumes:
+  mysql_data:
+
+networks:
+  gospelmus_net:
