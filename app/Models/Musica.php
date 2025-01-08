@@ -9,7 +9,7 @@ class Musica extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['artista_id', 'tonalidade_id', 'dados'];
+    protected $fillable = ['artista_id', 'titulo', 'tonalidade_id', 'dados', 'conteudo'];
 
     /**
      * Relacionamento: Uma música pertence a um artista.

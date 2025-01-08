@@ -82,6 +82,11 @@ class ScrapingService
             $tituloMusica = $node->text(); // Nome da música
             $linkMusica = $node->attr('href'); // URL da música
 
+            // Verificar se o link é relativo e completá-lo se necessário
+            if (!Str::startsWith($linkMusica, 'http')) {
+                $linkMusica = 'https://www.cifraclub.com.br' . $linkMusica;
+            }
+
             // Salvar a música no banco de dados
             Musica::updateOrCreate(
                 ['artista_id' => $artista->id, 'titulo' => $tituloMusica],

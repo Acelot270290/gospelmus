@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('artista_id')->constrained('artistas')->onDelete('cascade');
         $table->foreignId('tonalidade_id')->constrained('tonalidades')->onDelete('cascade');
-        $table->json('dados');
+        $table->json('conteudo');
         $table->timestamps();
     });
 }
