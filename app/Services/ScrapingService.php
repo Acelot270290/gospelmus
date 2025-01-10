@@ -33,7 +33,8 @@ class ScrapingService
             $artista = $this->saveArtista($nomeArtista, $imagemArtista);
 
             // Obter e salvar músicas
-            $this->saveMusicas($crawler, $artista);
+            //$this->saveMusicas($crawler, $artista);
+            $this->saveMusicas_new($crawler, $artista);
 
             return ['success' => true, 'message' => 'Músicas e artista raspados com sucesso!'];
         } catch (\Exception $e) {
@@ -67,6 +68,32 @@ class ScrapingService
             ['nome' => $nomeArtista],
             ['imagem' => $caminhoImagem]
         );
+    }
+
+    /**
+     * Salva as músicas do artista.
+     *
+     * @param Crawler $crawler
+     * @param Artista $artista
+     * @return void
+     */
+    private function saveMusicas_new(Crawler $crawler, Artista $artista): void
+    {
+        $crawler->filter('#js-a-songs > li > a')->each(function (Crawler $node) use ($artista) {
+            $tituloMusica = $node->text(); // Nome da música
+            $linkMusica = $node->attr('href'); // URL da música
+
+            // Verificar se o link é relativo e completá-lo se necessário
+            if (!Str::startsWith($linkMusica, 'http')) {
+                $linkMusica = 'https://www.cifraclub.com.br' . $linkMusica;
+            }
+
+            // Salvar a música no banco de dados
+            Musica::updateOrCreate(
+                ['artista_id' => $artista->id, 'titulo' => $tituloMusica],
+                ['dados' => json_encode(['url' => $linkMusica])]
+            );
+        });
     }
 
     /**
