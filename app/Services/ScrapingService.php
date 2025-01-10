@@ -9,8 +9,17 @@ use App\Models\Musica;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+use App\Services\MusicaService;
+
 class ScrapingService
 {
+    protected $musicaService;
+
+    public function __construct(MusicaService $musicaService)
+    {
+        $this->musicaService = $musicaService;
+    }
+
     /**
      * Processa a raspagem de músicas de um artista a partir de uma URL.
      *
@@ -34,7 +43,7 @@ class ScrapingService
 
             // Obter e salvar músicas
             //$this->saveMusicas($crawler, $artista);
-            $this->saveMusicas_new($crawler, $artista);
+            $this->saveMusicas($crawler, $artista);
 
             return ['success' => true, 'message' => 'Músicas e artista raspados com sucesso!'];
         } catch (\Exception $e) {
@@ -77,10 +86,11 @@ class ScrapingService
      * @param Artista $artista
      * @return void
      */
-    private function saveMusicas_new(Crawler $crawler, Artista $artista): void
+    private function saveMusicas(Crawler $crawler, Artista $artista): void
     {
+        // Nessa função, podemos adicionar um array para segurar todos os links ou podemos sair disparando o job com o redis, por exemplo
         $crawler->filter('#js-a-songs > li > a')->each(function (Crawler $node) use ($artista) {
-            $tituloMusica = $node->text(); // Nome da música
+            //$tituloMusica = $node->text(); // Nome da música
             $linkMusica = $node->attr('href'); // URL da música
 
             // Verificar se o link é relativo e completá-lo se necessário
@@ -89,10 +99,7 @@ class ScrapingService
             }
 
             // Salvar a música no banco de dados
-            Musica::updateOrCreate(
-                ['artista_id' => $artista->id, 'titulo' => $tituloMusica],
-                ['dados' => json_encode(['url' => $linkMusica])]
-            );
+            $this->musicaService->salvarMusica($linkMusica);
         });
     }
 
@@ -103,7 +110,7 @@ class ScrapingService
      * @param Artista $artista
      * @return void
      */
-    private function saveMusicas(Crawler $crawler, Artista $artista): void
+    private function saveMusicas_old(Crawler $crawler, Artista $artista): void
     {
         $crawler->filter('.g-1 > li > a')->each(function (Crawler $node) use ($artista) {
             $tituloMusica = $node->text(); // Nome da música
