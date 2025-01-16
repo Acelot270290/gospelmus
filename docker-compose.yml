@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/var/www/html
     ports:
-      - "9000:9000"
+      - "9010:9000"
     environment:
       - PHP_EXTENSION_DIR=/usr/local/lib/php/extensions/no-debug-non-zts-20200930
     depends_on:
