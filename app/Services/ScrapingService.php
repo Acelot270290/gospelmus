@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 use App\Services\MusicaService;
+use Illuminate\Support\Facades\Log;
 
 class ScrapingService
 {
@@ -86,33 +87,19 @@ class ScrapingService
      * @param Artista $artista
      * @return void
      */
-    private function saveMusicas(Crawler $crawler, Artista $artista): void
-    {
-        // Nessa função, podemos adicionar um array para segurar todos os links ou podemos sair disparando o job com o redis, por exemplo
-        $crawler->filter('#js-a-songs > li > a')->each(function (Crawler $node) use ($artista) {
-            //$tituloMusica = $node->text(); // Nome da música
-            $linkMusica = $node->attr('href'); // URL da música
-
-            // Verificar se o link é relativo e completá-lo se necessário
-            if (!Str::startsWith($linkMusica, 'http')) {
-                $linkMusica = 'https://www.cifraclub.com.br' . $linkMusica;
-            }
-
-            // Salvar a música no banco de dados
-            $this->musicaService->salvarMusica($linkMusica);
-        });
-    }
-
     /**
-     * Salva as músicas do artista.
+     * Salva as músicas do artista e registra logs.
      *
      * @param Crawler $crawler
      * @param Artista $artista
      * @return void
      */
-    private function saveMusicas_old(Crawler $crawler, Artista $artista): void
+    private function saveMusicas(Crawler $crawler, Artista $artista): void
     {
-        $crawler->filter('.g-1 > li > a')->each(function (Crawler $node) use ($artista) {
+        // Array para armazenar os detalhes das músicas salvas
+        $musicasSalvas = [];
+
+        $crawler->filter('#js-a-songs > li > a')->each(function (Crawler $node) use ($artista, &$musicasSalvas) {
             $tituloMusica = $node->text(); // Nome da música
             $linkMusica = $node->attr('href'); // URL da música
 
@@ -122,10 +109,22 @@ class ScrapingService
             }
 
             // Salvar a música no banco de dados
-            Musica::updateOrCreate(
-                ['artista_id' => $artista->id, 'titulo' => $tituloMusica],
-                ['dados' => json_encode(['url' => $linkMusica])]
-            );
+            $this->musicaService->salvarMusica($linkMusica);
+
+            // Adicionar música ao log
+            $musicasSalvas[] = [
+                'titulo' => $tituloMusica,
+                'link' => $linkMusica,
+            ];
         });
+
+        // Registrar as músicas salvas no log
+        if (!empty($musicasSalvas)) {
+            foreach ($musicasSalvas as $musica) {
+                Log::info("Música salva: {$musica['titulo']} - {$musica['link']}");
+            }
+        } else {
+            Log::warning("Nenhuma música foi encontrada para o artista: {$artista->nome}");
+        }
     }
 }
