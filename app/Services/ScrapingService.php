@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Intervention\Image\Facades\Image;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Models\Artista;
 use App\Models\Musica;
@@ -68,15 +69,29 @@ class ScrapingService
         $pastaDestino = "artista/{$artistaSlug}/thumb";
         $nomeArquivo = "foto-" . hash('md5', $nomeArtista) . ".jpg";
 
+        // Cria a slug do artista
+        $artistaSlug = Str::slug($nomeArtista);
+
+        // Seta o nome do arquivo para o nome do artista (slugfied) com a extensão webp
+        $nomeArquivoWebp = "{$artistaSlug}.webp";
+
+        // Define os caminhos da imagem
+        //$caminhoImagem = "{$pastaDestino}/{$nomeArquivo}";
+        $caminhoImagemWebp = "{$pastaDestino}/{$nomeArquivoWebp}";
+
         // Baixar e salvar a imagem localmente
         $conteudoImagem = file_get_contents($imagemArtista);
-        Storage::disk('public')->put("{$pastaDestino}/{$nomeArquivo}", $conteudoImagem);
+        //Storage::disk('public')->put($caminhoImagem, $conteudoImagem);
 
-        // Salvar o artista no banco de dados
-        $caminhoImagem = "{$pastaDestino}/{$nomeArquivo}";
+        // Converter a imagem para webp com qualidade 80 usando o pacote intervention/image
+        $conteudoImagemWebp = Image::make($conteudoImagem)->encode('webp', 80);
+        
+        // Salva a imagem no disco
+        Storage::disk('public')->put($caminhoImagemWebp, $conteudoImagemWebp);
+
         return Artista::updateOrCreate(
             ['nome' => $nomeArtista],
-            ['imagem' => $caminhoImagem]
+            ['imagem' => $conteudoImagemWebp]
         );
     }
 
