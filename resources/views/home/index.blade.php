@@ -13,7 +13,7 @@
 
   <!-- Featured Section -->
   <section class="container my-5">
-    <h2 class="text-center mb-4">Featured Songs</h2>
+    <h2 class="text-center mb-4">Featured Songs webhook</h2>
     <div class="row">
       <div class="col-md-4">
         <div class="card">
