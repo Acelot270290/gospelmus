@@ -6,7 +6,7 @@
   <!-- Hero Section -->
   <section class="hero">
     <div>
-      <h1>Discover Your Favorite Music</h1>
+      <h1>Teste</h1>
       <p>Explore songs, chords, and artists from all genres</p>
     </div>
   </section>
