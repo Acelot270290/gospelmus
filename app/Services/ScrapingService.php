@@ -136,10 +136,10 @@ class ScrapingService
         // Registrar as músicas salvas no log
         if (!empty($musicasSalvas)) {
             foreach ($musicasSalvas as $musica) {
-                Log::info("Música salva: {$musica['titulo']} - {$musica['link']}");
+                Log::channel('scrape')->info("Música salva: {$musica['titulo']} - {$musica['link']}");
             }
         } else {
-            Log::warning("Nenhuma música foi encontrada para o artista: {$artista->nome}");
+            Log::channel('scrape')->warning("Nenhuma música foi encontrada para o artista: {$artista->nome}");
         }
     }
 }
