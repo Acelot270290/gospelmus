@@ -127,6 +127,10 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'scrape' => [
+            'path' => storage_path('logs/scrape.log'),
+        ],
+
     ],
 
 ];
