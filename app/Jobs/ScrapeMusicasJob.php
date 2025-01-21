@@ -32,18 +32,18 @@ class ScrapeMusicasJob implements ShouldQueue
      * @return void
      */
     public function handle(ScrapingService $scrapingService)
-{
-    try {
-        $scrapingService->scrapeMusicas($this->url);
-        Log::info("Raspagem de músicas para a URL {$this->url} concluída com sucesso.");
-    } catch (\Exception $e) {
-        // Log da falha
-        Log::error("Erro ao processar o job ScrapeMusicasJob: " . $e->getMessage());
-        Log::error("Stack Trace: " . $e->getTraceAsString());
+    {
+        try {
+            $scrapingService->scrapeMusicas($this->url);
+            Log::info("Raspagem de músicas para a URL {$this->url} concluída com sucesso.");
+        } catch (\Exception $e) {
+            // Log da falha
+            Log::error("Erro ao processar o job ScrapeMusicasJob: " . $e->getMessage());
+            Log::error("Stack Trace: " . $e->getTraceAsString());
 
-        // Rethrow para registrar como falha
-        throw $e;
+            // Rethrow para registrar como falha
+            throw $e;
+        }
     }
-}
 
 }
