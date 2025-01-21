@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Models\Artista;
 use App\Models\Musica;
