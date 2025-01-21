@@ -6,14 +6,14 @@
   <!-- Hero Section -->
   <section class="hero">
     <div>
-      <h1>Discover Your Favorite Music</h1>
+      <h1>Teste</h1>
       <p>Explore songs, chords, and artists from all genres</p>
     </div>
   </section>
 
   <!-- Featured Section -->
   <section class="container my-5">
-    <h2 class="text-center mb-4">Featured Songs</h2>
+    <h2 class="text-center mb-4">Featured Songs webhook</h2>
     <div class="row">
       <div class="col-md-4">
         <div class="card">
